@@ -1,0 +1,141 @@
+/*
+  ChronosBot — Design tokens
+  Identidade: tinta de mapa antigo + instrumentos de navegação.
+  Evita os clichês de IA (creme+terracota / preto+neon): usa azul-tinta
+  profundo, latão envelhecido (história) e verde topográfico (geografia).
+*/
+
+:root,
+[data-theme="escuro"] {
+  --bg-app: #12202c;
+  --bg-panel: #182b3a;
+  --bg-panel-raised: #1f3446;
+  --bg-input: #14232f;
+  --border: #2c4356;
+  --border-soft: #22364590;
+
+  --ink: #ece4d3;
+  --ink-muted: #a9b8c4;
+  --ink-faint: #6d8291;
+
+  --accent-historia: #c99a4b;
+  --accent-historia-forte: #e0b567;
+  --accent-geografia: #5b9c8a;
+  --accent-geografia-forte: #7bc0ac;
+
+  --perigo: #d17a6a;
+  --sucesso: #6fae86;
+
+  --sombra: 0 8px 24px -12px rgba(0, 0, 0, 0.55);
+}
+
+[data-theme="claro"] {
+  --bg-app: #f3efe4;
+  --bg-panel: #ffffff;
+  --bg-panel-raised: #faf7ee;
+  --bg-input: #ffffff;
+  --border: #ddd4bd;
+  --border-soft: #ddd4bd80;
+
+  --ink: #24303a;
+  --ink-muted: #566472;
+  --ink-faint: #8b96a0;
+
+  --accent-historia: #9c6f28;
+  --accent-historia-forte: #7c581e;
+  --accent-geografia: #3f7c6c;
+  --accent-geografia-forte: #2f6152;
+
+  --perigo: #b8493a;
+  --sucesso: #3f7c58;
+
+  --sombra: 0 8px 24px -14px rgba(40, 30, 10, 0.25);
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html,
+body,
+#root {
+  height: 100%;
+}
+
+body {
+  margin: 0;
+  background: var(--bg-app);
+  color: var(--ink);
+  font-family: "Inter", system-ui, sans-serif;
+  -webkit-font-smoothing: antialiased;
+  transition: background-color 0.25s ease, color 0.25s ease;
+}
+
+h1,
+h2,
+h3,
+.fonte-display {
+  font-family: "Fraunces", Georgia, serif;
+  letter-spacing: -0.01em;
+}
+
+.fonte-mono {
+  font-family: "JetBrains Mono", monospace;
+}
+
+a {
+  color: inherit;
+}
+
+button {
+  font-family: inherit;
+}
+
+::selection {
+  background: var(--accent-geografia);
+  color: var(--bg-app);
+}
+
+/* Foco visível — acessibilidade */
+:focus-visible {
+  outline: 2px solid var(--accent-geografia-forte);
+  outline-offset: 2px;
+  border-radius: 4px;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.001ms !important;
+    transition-duration: 0.001ms !important;
+  }
+}
+
+/* ---------- Elemento de assinatura: linha de contorno topográfico ---------- */
+.linha-contorno {
+  width: 100%;
+  height: 10px;
+  overflow: hidden;
+  opacity: 0.55;
+}
+
+.linha-contorno svg {
+  width: 100%;
+  height: 100%;
+  display: block;
+}
+
+.scrollbar-fina {
+  scrollbar-width: thin;
+  scrollbar-color: var(--border) transparent;
+}
+
+.scrollbar-fina::-webkit-scrollbar {
+  width: 6px;
+}
+
+.scrollbar-fina::-webkit-scrollbar-thumb {
+  background: var(--border);
+  border-radius: 999px;
+}
