@@ -21,13 +21,13 @@
 | 🔐 Autenticação (JWT / RBAC) | ✅ Concluído | ![100%](https://img.shields.io/badge/100%25-brightgreen?style=flat-square) |
 | 🧠 Motor RAG (Indexação & Retrieval) | ✅ Concluído | ![100%](https://img.shields.io/badge/100%25-brightgreen?style=flat-square) |
 | 📝 Modo Simulado (Quiz) | ✅ Concluído | ![100%](https://img.shields.io/badge/100%25-brightgreen?style=flat-square) |
-| 🛣️ Rotas do Professor | 🔄 Em andamento | ![70%](https://img.shields.io/badge/70%25-yellow?style=flat-square) |
-| 🛣️ Rotas do Aluno | 🔄 Em andamento | ![60%](https://img.shields.io/badge/60%25-yellow?style=flat-square) |
-| ⚙️ Backend (Integração Geral) | 🔄 Em andamento | ![75%](https://img.shields.io/badge/75%25-yellow?style=flat-square) |
-| 🌐 Frontend (Interface Web) | 🔄 Em andamento | ![40%](https://img.shields.io/badge/40%25-orange?style=flat-square) |
+| 🛣️ Rotas do Professor | 🔄 Em andamento | ![80%](https://img.shields.io/badge/80%25-yellow?style=flat-square) |
+| 🛣️ Rotas do Aluno | 🔄 Em andamento | ![80%](https://img.shields.io/badge/80%25-yellow?style=flat-square) |
+| ⚙️ Backend (Integração Geral) | 🔄 Em andamento | ![85%](https://img.shields.io/badge/85%25-yellow?style=flat-square) |
+| 🌐 Frontend (Interface Web) | 🔄 Em andamento | ![70%](https://img.shields.io/badge/70%25-orange?style=flat-square) |
 | 🧪 Testes & Validação | ⏳ Pendente | ![0%](https://img.shields.io/badge/0%25-lightgrey?style=flat-square) |
 
-> **Versão atual:** `0.7-beta` · **Última atualização:** Julho/2025
+> **Versão atual:** `0.7-beta` · **Última atualização:** Abril/2026
 
 ---
 
