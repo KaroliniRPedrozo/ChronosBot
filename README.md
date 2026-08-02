@@ -1,7 +1,7 @@
 # ChronosBot
 
 <h1 align="center">
-  <img src="https://github.com/KaroliniRPedrozo/ChronosBot/blob/main/frontend/assets/logo.png" width="100" alt="ChronosBot Logo"><br>
+  <img src="https://github.com/KaroliniRPedrozo/ChronosBot/blob/main/frontend/src/assets/logo.png" width="100" alt="ChronosBot Logo"><br>
   ChronosBot
 </h1>
 
