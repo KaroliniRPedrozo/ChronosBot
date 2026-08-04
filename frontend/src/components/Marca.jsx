@@ -1,9 +1,3 @@
-/*
-  Marca do ChronosBot: um losango de bússola simplificado, no lugar de um
-  ícone de robô genérico — reforça a identidade de "navegação pelo tempo e
-  pelo espaço" (História + Geografia). Se `logo.png` estiver disponível em
-  /src/assets/logo.png, ele é usado no lugar deste SVG.
-*/
 import { useState } from "react";
 import logo from "../assets/logo.png";
 

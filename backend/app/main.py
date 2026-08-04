@@ -8,6 +8,7 @@ from backend.app.core.config import settings
 from backend.app.core.database import Base, engine
 from backend.app import models  # noqa: F401 - garante que todos os models sejam registrados no Base.metadata
 from backend.app.routes import professor_routes
+from backend.seed_test_data import reparar_esquema_antigo
 
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
@@ -41,7 +42,8 @@ def criar_tabelas():
     Em produção, o recomendado seria usar Alembic para migrações versionadas.
     """
     Base.metadata.create_all(bind=engine)
-    logger.info("Tabelas verificadas/criadas com sucesso.")
+    reparar_esquema_antigo()
+    logger.info("Tabelas verificadas/criadas e esquema legado reparado com sucesso.")
 
 
 @app.get("/", tags=["Status"])

@@ -35,6 +35,17 @@ def _constraint_exists(conn, table_name: str, constraint_name: str) -> bool:
     return result.first() is not None
 
 
+def _column_exists(conn, table_name: str, column_name: str) -> bool:
+    result = conn.execute(
+        text(
+            "SELECT 1 FROM information_schema.columns "
+            "WHERE table_name = :table_name AND column_name = :column_name"
+        ),
+        {"table_name": table_name, "column_name": column_name},
+    )
+    return result.first() is not None
+
+
 def reparar_esquema_antigo():
     with engine.begin() as conn:
         conn.execute(text("ALTER TABLE usuarios ADD COLUMN IF NOT EXISTS papel VARCHAR(50)"))
@@ -54,6 +65,43 @@ def reparar_esquema_antigo():
         conn.execute(text("ALTER TABLE turmas ALTER COLUMN codigo_convite SET NOT NULL"))
         if not _constraint_exists(conn, "turmas", "uq_turmas_codigo_convite"):
             conn.execute(text("ALTER TABLE turmas ADD CONSTRAINT uq_turmas_codigo_convite UNIQUE (codigo_convite)"))
+
+        conn.execute(text("ALTER TABLE materiais ADD COLUMN IF NOT EXISTS disciplina VARCHAR(50)"))
+        conn.execute(text("ALTER TABLE materiais ADD COLUMN IF NOT EXISTS professor_id INTEGER"))
+        conn.execute(text("ALTER TABLE materiais ADD COLUMN IF NOT EXISTS status_processamento VARCHAR(50) DEFAULT 'pendente'"))
+        conn.execute(text("ALTER TABLE materiais ADD COLUMN IF NOT EXISTS mensagem_erro TEXT"))
+
+        if _column_exists(conn, "materiais", "turma_id"):
+            conn.execute(text(
+                "UPDATE materiais SET disciplina = turmas.disciplina, professor_id = turmas.professor_id "
+                "FROM turmas WHERE materiais.turma_id = turmas.id AND materiais.disciplina IS NULL"
+            ))
+
+        conn.execute(text("UPDATE materiais SET disciplina = 'Historia' WHERE disciplina IS NULL"))
+
+        if _column_exists(conn, "materiais", "processado"):
+            conn.execute(text(
+                "UPDATE materiais SET status_processamento = CASE WHEN processado IS TRUE THEN 'concluido' ELSE 'pendente' END "
+                "WHERE status_processamento IS NULL"
+            ))
+
+        conn.execute(text(
+            "UPDATE materiais SET professor_id = (SELECT id FROM usuarios WHERE papel = 'professor' LIMIT 1) "
+            "WHERE professor_id IS NULL"
+        ))
+
+        conn.execute(text("ALTER TABLE materiais ADD COLUMN IF NOT EXISTS criado_em TIMESTAMP WITH TIME ZONE DEFAULT now()"))
+        conn.execute(text("UPDATE materiais SET criado_em = now() WHERE criado_em IS NULL"))
+        conn.execute(text("ALTER TABLE materiais ALTER COLUMN criado_em SET DEFAULT now()"))
+        conn.execute(text("ALTER TABLE materiais ALTER COLUMN criado_em SET NOT NULL"))
+
+        if _column_exists(conn, "materiais", "data_liberacao"):
+            conn.execute(text("ALTER TABLE materiais DROP COLUMN IF EXISTS data_liberacao"))
+        conn.execute(text("ALTER TABLE materiais ALTER COLUMN disciplina SET NOT NULL"))
+        conn.execute(text("ALTER TABLE materiais ALTER COLUMN professor_id SET NOT NULL"))
+        conn.execute(text("ALTER TABLE materiais ALTER COLUMN status_processamento SET NOT NULL"))
+        conn.execute(text("ALTER TABLE materiais DROP COLUMN IF EXISTS turma_id"))
+        conn.execute(text("ALTER TABLE materiais DROP COLUMN IF EXISTS processado"))
 
 
 def criar_usuario(db, nome, email, senha, papel):
