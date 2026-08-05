@@ -1,3 +1,4 @@
+<a name="topo"></a>
 <h1 align="center">
   <img src="https://github.com/KaroliniRPedrozo/ChronosBot/blob/main/frontend/src/assets/logo.png" width="100" alt="ChronosBot Logo"><br>
   ChronosBot
@@ -7,9 +8,37 @@
 
 [![Python](https://img.shields.io/badge/Python-3.11+-3776AB?style=flat-square&logo=python&logoColor=white)](https://python.org)
 [![FastAPI](https://img.shields.io/badge/FastAPI-0.111-009688?style=flat-square&logo=fastapi&logoColor=white)](https://fastapi.tiangolo.com)
+[![React](https://img.shields.io/badge/React-18-61DAFB?style=flat-square&logo=react&logoColor=white)](https://react.dev)
 [![PostgreSQL](https://img.shields.io/badge/PostgreSQL-16-336791?style=flat-square&logo=postgresql&logoColor=white)](https://postgresql.org)
-[![ChromaDB](https://img.shields.io/badge/ChromaDB-VectorDB-FF6B35?style=flat-square)](https://trychroma.com)
+[![pgvector](https://img.shields.io/badge/pgvector-VectorDB-4169E1?style=flat-square)](https://github.com/pgvector/pgvector)
 [![Gemini](https://img.shields.io/badge/Gemini-API-4285F4?style=flat-square&logo=google&logoColor=white)](https://ai.google.dev)
+
+---
+
+## 📑 Sumário
+
+- [📊 Status de Desenvolvimento](#-status-de-desenvolvimento)
+- [📖 Sobre o Projeto](#-sobre-o-projeto)
+- [✨ Funcionalidades](#-funcionalidades)
+- [🏗️ Arquitetura do Sistema](#️-arquitetura-do-sistema)
+- [🗄️ Esquema do Banco de Dados](#️-esquema-do-banco-de-dados-postgresql--pgvector)
+- [🧠 Lógica RAG com Filtro Temporal](#-lógica-rag-com-filtro-temporal-python)
+- [🔑 Rotação de Chaves Gemini](#-rotação-de-chaves-gemini-free-tier)
+- [📝 Modo Simulado](#-modo-simulado-geração-de-quiz-com-gemini)
+- [🛣️ Rotas da API](#️-rotas-da-api-fastapi)
+- [🚀 Guia Completo de Instalação](#-guia-completo-de-instalação-passo-a-passo)
+  - [1. Pré-requisitos (o que baixar)](#1-pré-requisitos-o-que-baixar)
+  - [2. Clonar o repositório](#2-clonar-o-repositório)
+  - [3. Configurar o PostgreSQL + pgvector](#3-configurar-o-postgresql--pgvector)
+  - [4. Configurar o Backend](#4-configurar-o-backend)
+  - [5. Configurar o Frontend](#5-configurar-o-frontend)
+  - [6. Rodar o projeto](#6-rodar-o-projeto)
+  - [7. Verificação final](#7-verificação-final)
+  - [Problemas comuns](#️-problemas-comuns)
+- [🗂️ Estrutura do Projeto](#️-estrutura-do-projeto)
+- [🔒 Segurança e Conformidade](#-segurança-e-conformidade)
+- [📊 Métricas de Qualidade](#-métricas-de-qualidade-isoiec-25010)
+- [🤝 Contribuindo](#-contribuindo)
 
 ---
 
@@ -19,15 +48,19 @@
 | ------ | ------ | --------- |
 | 🗄️ Banco de Dados (Modelos & Esquema) | ✅ Concluído | ![100%](https://img.shields.io/badge/100%25-brightgreen?style=flat-square) |
 | 🔐 Autenticação (JWT / RBAC) | ✅ Concluído | ![100%](https://img.shields.io/badge/100%25-brightgreen?style=flat-square) |
-| 🧠 Motor RAG (Indexação & Retrieval) | ✅ Concluído | ![100%](https://img.shields.io/badge/100%25-brightgreen?style=flat-square) |
+| 🧠 Motor RAG (pgvector — Indexação & Retrieval) | ✅ Concluído | ![100%](https://img.shields.io/badge/100%25-brightgreen?style=flat-square) |
+| 🔑 Rotação de Chaves Gemini (free tier) | ✅ Concluído | ![100%](https://img.shields.io/badge/100%25-brightgreen?style=flat-square) |
 | 📝 Modo Simulado (Quiz) | ✅ Concluído | ![100%](https://img.shields.io/badge/100%25-brightgreen?style=flat-square) |
 | 🛣️ Rotas do Professor | 🔄 Em andamento | ![80%](https://img.shields.io/badge/80%25-yellow?style=flat-square) |
 | 🛣️ Rotas do Aluno | 🔄 Em andamento | ![80%](https://img.shields.io/badge/80%25-yellow?style=flat-square) |
 | ⚙️ Backend (Integração Geral) | 🔄 Em andamento | ![85%](https://img.shields.io/badge/85%25-yellow?style=flat-square) |
-| 🌐 Frontend (Interface Web) | 🔄 Em andamento | ![70%](https://img.shields.io/badge/70%25-orange?style=flat-square) |
+| 🌐 Frontend (React + páginas legadas HTML) | 🔄 Em andamento | ![70%](https://img.shields.io/badge/70%25-orange?style=flat-square) |
 | 🧪 Testes & Validação | ⏳ Pendente | ![0%](https://img.shields.io/badge/0%25-lightgrey?style=flat-square) |
 
-> **Versão atual:** `0.7-beta` · **Última atualização:** Abril/2026
+> **Versão atual:** `0.7-beta` · **Última atualização:** Agosto/2026
+
+
+<p align="right">(<a href="#topo">voltar ao topo</a>)</p>
 
 ---
 
@@ -48,6 +81,9 @@ O tutor inteligente é especializado nas seguintes disciplinas da Educação Bá
 
 > Perguntas fora dessas disciplinas são educadamente recusadas pelo tutor, mantendo o foco pedagógico.
 
+
+<p align="right">(<a href="#topo">voltar ao topo</a>)</p>
+
 ---
 
 ## ✨ Funcionalidades
@@ -66,6 +102,9 @@ O tutor inteligente é especializado nas seguintes disciplinas da Educação Bá
 - **Modo Simulado** — geração de quiz de múltipla escolha com base no conteúdo estudado
 - Histórico de sessões e desempenho nos simulados
 
+
+<p align="right">(<a href="#topo">voltar ao topo</a>)</p>
+
 ---
 
 ## 🏗️ Arquitetura do Sistema
@@ -73,7 +112,7 @@ O tutor inteligente é especializado nas seguintes disciplinas da Educação Bá
 ```text
 ┌─────────────────────────────────────────────────────────────┐
 │                        FRONTEND                             │
-│        HTML + CSS + JavaScript (Fetch API / SSE)            │
+│      React (SPA) + páginas HTML legadas em migração         │
 └─────────────────┬────────────────────┬──────────────────────┘
                   │ REST / WebSocket   │ SSE (streaming)
 ┌─────────────────▼────────────────────▼──────────────────────┐
@@ -85,23 +124,25 @@ O tutor inteligente é especializado nas seguintes disciplinas da Educação Bá
                              │                     │
           ┌──────────────────┘                     │
           ▼                                        ▼
-┌─────────────────────┐              ┌──────────────────────────┐
-│  ChromaDB (Vetorial)│              │  Google Gemini API       │
-│  embeddings + meta  │              │  (LLM Generativo)        │
-└─────────────────────┘              └──────────────────────────┘
-          │
-┌─────────▼───────────────┐
-│  PostgreSQL (Relacional)│
-│  users, turmas,         │
-│  arquivos, permissões   │
-└─────────────────────────┘
+┌──────────────────────────┐          ┌──────────────────────────┐
+│  PostgreSQL + pgvector   │          │  Google Gemini API       │
+│  dados relacionais +     │          │  (LLM + Embeddings)      │
+│  embeddings na mesma base│          │  com rotação de chaves   │
+└──────────────────────────┘          └──────────────────────────┘
 ```
+
+> **Por que pgvector em vez de um banco vetorial separado?** Mantém dados relacionais (turmas, permissões, datas de liberação) e embeddings na mesma transação/banco, simplificando deploy e garantindo consistência entre metadado e vetor.
+
+
+<p align="right">(<a href="#topo">voltar ao topo</a>)</p>
 
 ---
 
-## 🗄️ Esquema do Banco de Dados Relacional
+## 🗄️ Esquema do Banco de Dados (PostgreSQL + pgvector)
 
 ```sql
+CREATE EXTENSION IF NOT EXISTS vector;
+
 -- Professores e Alunos
 CREATE TABLE users (
     id          UUID PRIMARY KEY DEFAULT gen_random_uuid(),
@@ -139,6 +180,19 @@ CREATE TABLE arquivos (
     criado_em        TIMESTAMPTZ DEFAULT NOW()
 );
 
+-- Chunks indexados com embeddings (pgvector)
+CREATE TABLE chunks_rag (
+    id            UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+    arquivo_id    UUID REFERENCES arquivos(id) ON DELETE CASCADE,
+    turma_id      UUID REFERENCES turmas(id) ON DELETE CASCADE,
+    disciplina    VARCHAR(50) CHECK (disciplina IN ('historia', 'geografia')),
+    data_liberacao DATE NOT NULL,
+    conteudo      TEXT NOT NULL,
+    embedding     VECTOR(768),   -- dimensão do modelo de embeddings do Gemini
+    criado_em     TIMESTAMPTZ DEFAULT NOW()
+);
+CREATE INDEX idx_chunks_embedding ON chunks_rag USING ivfflat (embedding vector_cosine_ops);
+
 -- Sessões de chat dos alunos
 CREATE TABLE sessoes_chat (
     id            UUID PRIMARY KEY DEFAULT gen_random_uuid(),
@@ -161,17 +215,8 @@ CREATE TABLE simulados (
 );
 ```
 
-O banco vetorial **ChromaDB** armazena os embeddings com metadados que espelham a tabela `arquivos`:
 
-```python
-# Metadados armazenados em cada chunk do ChromaDB
-{
-    "arquivo_id":     "uuid-do-arquivo",
-    "turma_id":       "uuid-da-turma",
-    "disciplina":     "historia",       # "historia" | "geografia"
-    "data_liberacao": "2025-08-01"      # string ISO para filtro temporal
-}
-```
+<p align="right">(<a href="#topo">voltar ao topo</a>)</p>
 
 ---
 
@@ -182,37 +227,38 @@ A recuperação de documentos aplica **dois filtros obrigatórios** antes de qua
 ```python
 # rag/retriever.py
 from datetime import date
-import chromadb
-from chromadb.utils import embedding_functions
-import google.generativeai as genai
-
-# Configuração do cliente ChromaDB e função de embedding via Gemini
-chroma_client = chromadb.HttpClient(host=settings.CHROMA_HOST, port=settings.CHROMA_PORT)
-
-# Usando o modelo de embeddings do Google
-class GeminiEmbeddingFunction(embedding_functions.EmbeddingFunction):
-    def __call__(self, input: list[str]) -> list[list[float]]:
-        genai.configure(api_key=settings.GEMINI_API_KEY)
-        result = genai.embed_content(
-            model="models/text-embedding-004",
-            content=input,
-            task_type="retrieval_document"
-        )
-        return result["embedding"] if isinstance(input, str) else result["embedding"]
-
-collection = chroma_client.get_collection(
-    name="materiais_educacionais",
-    embedding_function=GeminiEmbeddingFunction()
-)
+from pydantic import BaseModel
+from google import genai
+from sqlalchemy import select, and_
+from ..database import get_session
+from ..models import ChunkRAG
+from .key_rotation import get_active_gemini_client  # rotação de chaves p/ free tier
 
 DISCIPLINAS_PERMITIDAS = {"historia", "geografia"}
+
+
+class ContextoRecuperado(BaseModel):
+    """Resultado tipado da busca vetorial (Pydantic v2)."""
+    trechos: list[str]
+    turma_id: str
+    disciplina: str
+
+
+def gerar_embedding(texto: str) -> list[float]:
+    client = get_active_gemini_client()
+    resultado = client.models.embed_content(
+        model="text-embedding-004",
+        contents=texto,
+    )
+    return resultado.embeddings[0].values
+
 
 def recuperar_contexto(
     pergunta: str,
     turma_id: str,
     disciplina: str,
-    n_resultados: int = 5
-) -> list[str]:
+    n_resultados: int = 5,
+) -> ContextoRecuperado:
     """
     Recupera chunks relevantes APENAS dos materiais de História ou Geografia
     vinculados à turma do aluno e já liberados até a data atual.
@@ -224,7 +270,7 @@ def recuperar_contexto(
         n_resultados: Número de chunks a recuperar.
 
     Returns:
-        Lista de strings com os trechos relevantes encontrados.
+        ContextoRecuperado com os trechos relevantes encontrados.
 
     Raises:
         ValueError: Se a disciplina solicitada não for suportada.
@@ -235,24 +281,59 @@ def recuperar_contexto(
             f"Opções válidas: {DISCIPLINAS_PERMITIDAS}"
         )
 
-    hoje = date.today().isoformat()  # ex: "2025-07-08"
+    hoje = date.today()
+    vetor_pergunta = gerar_embedding(pergunta)
 
-    resultados = collection.query(
-        query_texts=[pergunta],
-        n_results=n_resultados,
-        where={
-            "$and": [
-                {"turma_id":        {"$eq": turma_id}},
-                {"disciplina":      {"$eq": disciplina}},
-                {"data_liberacao":  {"$lte": hoje}}
-            ]
-        },
-        include=["documents", "distances"]
+    with get_session() as session:
+        stmt = (
+            select(ChunkRAG)
+            .where(
+                and_(
+                    ChunkRAG.turma_id == turma_id,
+                    ChunkRAG.disciplina == disciplina,
+                    ChunkRAG.data_liberacao <= hoje,
+                )
+            )
+            .order_by(ChunkRAG.embedding.cosine_distance(vetor_pergunta))
+            .limit(n_resultados)
+        )
+        chunks = session.execute(stmt).scalars().all()
+
+    return ContextoRecuperado(
+        trechos=[c.conteudo for c in chunks],
+        turma_id=turma_id,
+        disciplina=disciplina,
     )
-
-    documentos = resultados.get("documents", [[]])[0]
-    return documentos  # lista de strings (chunks)
 ```
+
+
+<p align="right">(<a href="#topo">voltar ao topo</a>)</p>
+
+---
+
+## 🔑 Rotação de Chaves Gemini (Free Tier)
+
+Como o projeto roda no tier gratuito da API Gemini, um pool de chaves é rotacionado automaticamente ao atingir limites de quota, evitando interrupção do serviço em picos de uso (ex: véspera de simulado).
+
+```python
+# rag/key_rotation.py
+import itertools
+from google import genai
+from ..config import settings
+
+_pool_chaves = itertools.cycle(settings.GEMINI_API_KEYS)  # lista de chaves no .env
+
+
+def get_active_gemini_client() -> genai.Client:
+    """Retorna um client Gemini usando a próxima chave disponível do pool."""
+    chave_atual = next(_pool_chaves)
+    return genai.Client(api_key=chave_atual)
+```
+
+> ⚠️ **Nota de segurança:** as chaves de API nunca devem ser commitadas no repositório. Use `.env` (ignorado via `.gitignore`) e, se alguma chave já foi exposta em um commit anterior, revogue-a no Google AI Studio e reescreva o histórico do Git (`git filter-repo` ou BFG Repo-Cleaner) antes de tornar o repositório público.
+
+
+<p align="right">(<a href="#topo">voltar ao topo</a>)</p>
 
 ---
 
@@ -261,11 +342,8 @@ def recuperar_contexto(
 ```python
 # rag/simulado.py
 import json
-import google.generativeai as genai
 from .retriever import recuperar_contexto
-
-genai.configure(api_key=settings.GEMINI_API_KEY)
-modelo_gemini = genai.GenerativeModel("gemini-1.5-flash")
+from .key_rotation import get_active_gemini_client
 
 PROMPT_SIMULADO = """Você é um examinador rigoroso e imparcial de {disciplina}.
 Com base EXCLUSIVAMENTE no contexto abaixo, crie {n_questoes} questões
@@ -295,33 +373,25 @@ Formato de saída:
 {contexto}
 --- FIM DO CONTEXTO ---"""
 
+
 def gerar_simulado(
     turma_id: str,
     disciplina: str,
     topico: str = "todo o conteúdo disponível",
-    n_questoes: int = 5
+    n_questoes: int = 5,
 ) -> dict:
     """
     Gera um simulado de múltipla escolha com base nos materiais de
     História ou Geografia já liberados para a turma.
-
-    Args:
-        turma_id:   UUID da turma.
-        disciplina: "historia" ou "geografia".
-        topico:     Tema específico para filtrar a busca (opcional).
-        n_questoes: Quantidade de questões a gerar (padrão: 5).
-
-    Returns:
-        Dicionário com a lista de questões, gabaritos e justificativas.
     """
-    chunks = recuperar_contexto(
+    contexto_recuperado = recuperar_contexto(
         pergunta=topico,
         turma_id=turma_id,
         disciplina=disciplina,
-        n_resultados=10
+        n_resultados=10,
     )
 
-    if not chunks:
+    if not contexto_recuperado.trechos:
         return {
             "erro": (
                 f"Nenhum material de {disciplina.capitalize()} "
@@ -329,23 +399,25 @@ def gerar_simulado(
             )
         }
 
-    contexto = "\n\n---\n\n".join(chunks)
-    prompt   = PROMPT_SIMULADO.format(
+    contexto = "\n\n---\n\n".join(contexto_recuperado.trechos)
+    prompt = PROMPT_SIMULADO.format(
         disciplina=disciplina.capitalize(),
         n_questoes=n_questoes,
-        contexto=contexto
+        contexto=contexto,
     )
 
-    resposta = modelo_gemini.generate_content(
-        prompt,
-        generation_config=genai.GenerationConfig(
-            temperature=0.3,
-            response_mime_type="application/json"
-        )
+    client = get_active_gemini_client()
+    resposta = client.models.generate_content(
+        model="gemini-1.5-flash",
+        contents=prompt,
+        config={"temperature": 0.3, "response_mime_type": "application/json"},
     )
 
     return json.loads(resposta.text)
 ```
+
+
+<p align="right">(<a href="#topo">voltar ao topo</a>)</p>
 
 ---
 
@@ -365,121 +437,223 @@ def gerar_simulado(
 | `POST` | `/simulado/gerar` | Aluno | Gera quiz com o conteúdo liberado |
 | `POST` | `/simulado/{id}/responder` | Aluno | Submete respostas e calcula pontuação |
 
-### Exemplo de rota de chat com filtro RAG e Gemini
 
-```python
-# routes/chat.py
-from fastapi import APIRouter, Depends, HTTPException
-from pydantic import BaseModel
-from ..auth import get_current_user
-from ..rag.retriever import recuperar_contexto, DISCIPLINAS_PERMITIDAS
-import google.generativeai as genai
+<p align="right">(<a href="#topo">voltar ao topo</a>)</p>
 
-router = APIRouter(prefix="/chat", tags=["Chat Tutor"])
-genai.configure(api_key=settings.GEMINI_API_KEY)
-modelo = genai.GenerativeModel("gemini-1.5-flash")
+---
 
-class MensagemPayload(BaseModel):
-    mensagem:   str
-    disciplina: str  # "historia" | "geografia"
+## 🚀 Guia Completo de Instalação (Passo a Passo)
 
-@router.post("/mensagem")
-async def enviar_mensagem(
-    payload: MensagemPayload,
-    usuario = Depends(get_current_user)
-):
-    # Valida se a disciplina é suportada pelo sistema
-    if payload.disciplina not in DISCIPLINAS_PERMITIDAS:
-        raise HTTPException(
-            status_code=422,
-            detail=(
-                "O ChronosBot atende apenas às disciplinas de "
-                "História e Geografia."
-            )
-        )
+Este guia assume que você está começando do zero, sem nada instalado. Segue exatamente na ordem.
 
-    turma_id = usuario.turma_id  # extraído do JWT do aluno autenticado
+### 1. Pré-requisitos (o que baixar)
 
-    # 1. Recupera contexto com filtro de turma + disciplina + data
-    chunks   = recuperar_contexto(
-        pergunta=payload.mensagem,
-        turma_id=turma_id,
-        disciplina=payload.disciplina
-    )
-    contexto = "\n\n".join(chunks) if chunks else ""
+Instale cada item abaixo e confirme a versão pelo terminal.
 
-    # 2. Monta prompt com guardrail pedagógico e escopo disciplinar
-    system_prompt = f"""Você é o ChronosBot, um tutor educacional especializado
-em {payload.disciplina.capitalize()} para a Educação Básica.
+| Ferramenta | Versão mínima | Download | Comando de verificação |
+| ---------- | -------------- | -------- | ----------------------- |
+| **Git** | qualquer recente | [git-scm.com/downloads](https://git-scm.com/downloads) | `git --version` |
+| **Python** | 3.11+ | [python.org/downloads](https://www.python.org/downloads/) | `python3 --version` |
+| **Node.js** | 18+ (LTS) | [nodejs.org](https://nodejs.org/) | `node --version` e `npm --version` |
+| **PostgreSQL** | 16+ | [postgresql.org/download](https://www.postgresql.org/download/) | `psql --version` |
+| **Extensão pgvector** | compatível com seu PG | [github.com/pgvector/pgvector](https://github.com/pgvector/pgvector#installation) | ver passo 3 |
+| **Chave de API Gemini** | — | [ai.google.dev](https://ai.google.dev) → "Get API key" | — |
 
-Diretrizes obrigatórias:
-- Responda SOMENTE com base no contexto fornecido abaixo
-- Caso a resposta não esteja no contexto, informe:
-  'Este conteúdo ainda não foi liberado para sua turma.'
-- Caso a pergunta seja de outra disciplina, informe:
-  'Só posso auxiliar com questões de História e Geografia.'
-- Nunca invente ou extrapole informações além do contexto
-- Use linguagem clara e adequada ao nível do Ensino Básico
+> 💡 No Linux (Ubuntu/Mint), Python e Git geralmente já vêm instalados ou disponíveis via `apt`. No Windows, use os instaladores oficiais e marque a opção "Add to PATH".
 
-CONTEXTO:
-{contexto}"""
+**Instalando pré-requisitos no Linux (Ubuntu/Mint):**
 
-    # 3. Gera resposta via Gemini
-    resposta = modelo.generate_content(
-        [system_prompt, payload.mensagem],
-        generation_config=genai.GenerationConfig(temperature=0.2)
-    )
+```bash
+sudo apt update
+sudo apt install -y git python3 python3-venv python3-pip postgresql postgresql-contrib build-essential
 
-    return {"resposta": resposta.text}
+# Node.js via nvm (recomendado, evita conflito de versões)
+curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.39.7/install.sh | bash
+source ~/.bashrc
+nvm install --lts
+```
+
+**Instalando pré-requisitos no macOS (via Homebrew):**
+
+```bash
+brew install git python@3.11 node postgresql@16
+brew services start postgresql@16
+```
+
+**Instalando pré-requisitos no Windows:**
+
+1. Baixe e instale o [Git for Windows](https://git-scm.com/download/win)
+2. Baixe e instale o [Python 3.11+](https://www.python.org/downloads/windows/) (marque "Add Python to PATH")
+3. Baixe e instale o [Node.js LTS](https://nodejs.org/)
+4. Baixe e instale o [PostgreSQL 16](https://www.postgresql.org/download/windows/) usando o instalador oficial (inclui o pgAdmin)
+
+---
+
+### 2. Clonar o repositório
+
+```bash
+git clone https://github.com/KaroliniRPedrozo/ChronosBot.git
+cd ChronosBot
 ```
 
 ---
 
-## 🚀 Como Rodar Localmente
+### 3. Configurar o PostgreSQL + pgvector
 
-### Pré-requisitos
-
-- Python 3.11+
-- PostgreSQL 16
-- Docker (para o ChromaDB)
-- Chave de API do Google Gemini ([obter aqui](https://ai.google.dev))
-
-### Instalação
+**3.1. Crie o banco de dados:**
 
 ```bash
-# 1. Clone o repositório
-git clone https://github.com/KaroliniRPedrozo/ChronosBot.git
-cd ChronosBot
-
-# 2. Crie o ambiente virtual e instale as dependências
-python -m venv .venv
-source .venv/bin/activate        # Windows: .venv\Scripts\activate
-pip install -r requirements.txt
-
-# 3. Configure as variáveis de ambiente
-cp .env.example .env
-# Edite o arquivo .env com suas credenciais
-
-# 4. Suba o ChromaDB com Docker
-docker run -d -p 8000:8000 chromadb/chroma
-
-# 5. Inicialize as tabelas no PostgreSQL
-python -m scripts.init_db
-
-# 6. Inicie o servidor de desenvolvimento
-uvicorn main:app --reload
+# Acesse o psql como superusuário
+sudo -u postgres psql        # Linux
+psql -U postgres             # macOS/Windows
 ```
 
-### Variáveis de Ambiente (`.env`)
+Dentro do `psql`:
+
+```sql
+CREATE DATABASE chronosbot;
+CREATE USER chronosbot_user WITH PASSWORD 'sua_senha_aqui';
+GRANT ALL PRIVILEGES ON DATABASE chronosbot TO chronosbot_user;
+\q
+```
+
+**3.2. Instale a extensão `pgvector`:**
+
+```bash
+# Ubuntu/Mint — instala o pacote correspondente à sua versão do Postgres
+sudo apt install postgresql-16-pgvector
+
+# macOS (Homebrew)
+brew install pgvector
+
+# Caso o pacote não exista para sua versão, compile do source:
+git clone --branch v0.7.0 https://github.com/pgvector/pgvector.git
+cd pgvector
+make
+sudo make install
+cd ..
+```
+
+**3.3. Habilite a extensão dentro do banco criado:**
+
+```bash
+psql -U chronosbot_user -d chronosbot -c "CREATE EXTENSION IF NOT EXISTS vector;"
+```
+
+---
+
+### 4. Configurar o Backend
+
+**4.1. Crie e ative o ambiente virtual Python:**
+
+```bash
+python3 -m venv .venv
+
+# Ativar no Linux/macOS
+source .venv/bin/activate
+
+# Ativar no Windows (PowerShell)
+.venv\Scripts\Activate.ps1
+
+# Ativar no Windows (cmd)
+.venv\Scripts\activate.bat
+```
+
+> Você saberá que ativou corretamente quando o terminal mostrar `(.venv)` no início da linha.
+
+**4.2. Instale as dependências:**
+
+```bash
+pip install --upgrade pip
+pip install -r requirements.txt
+```
+
+**4.3. Configure as variáveis de ambiente:**
+
+```bash
+cp .env.example .env
+```
+
+Abra o arquivo `.env` (com `nano .env`, VS Code, etc.) e preencha:
 
 ```env
-DATABASE_URL=postgresql://user:password@localhost:5432/chronosbot
-GEMINI_API_KEY=AIza...
-CHROMA_HOST=localhost
-CHROMA_PORT=8000
-JWT_SECRET=sua-chave-secreta-aqui
+DATABASE_URL=postgresql://chronosbot_user:sua_senha_aqui@localhost:5432/chronosbot
+GEMINI_API_KEYS=AIza...,AIza...,AIza...   # uma ou mais chaves separadas por vírgula
+JWT_SECRET=gere-uma-chave-aleatoria-aqui
 JWT_EXPIRE_MINUTES=1440
 ```
+
+> Para gerar um `JWT_SECRET` seguro: `python3 -c "import secrets; print(secrets.token_hex(32))"`
+
+**4.4. Rode as migrações / inicialize as tabelas:**
+
+```bash
+python -m scripts.init_db
+```
+
+---
+
+### 5. Configurar o Frontend
+
+Em um **novo terminal** (mantenha o backend/venv do passo anterior aberto em outro):
+
+```bash
+cd ChronosBot/frontend
+npm install
+```
+
+Se o frontend também usar variáveis de ambiente (ex: URL da API), copie o exemplo:
+
+```bash
+cp .env.example .env.local
+# Edite .env.local, geralmente algo como:
+# VITE_API_URL=http://localhost:8000
+```
+
+---
+
+### 6. Rodar o projeto
+
+Você vai precisar de **dois terminais abertos ao mesmo tempo**:
+
+```bash
+# Terminal 1 — Backend (dentro da pasta raiz do projeto, com .venv ativado)
+uvicorn main:app --reload
+# Backend disponível em http://localhost:8000
+# Docs interativas (Swagger) em http://localhost:8000/docs
+```
+
+```bash
+# Terminal 2 — Frontend
+cd frontend
+npm run dev
+# Frontend disponível em http://localhost:5173 (padrão Vite)
+```
+
+---
+
+### 7. Verificação final
+
+- [ ] `http://localhost:8000/docs` abre a documentação Swagger da API
+- [ ] `http://localhost:5173` (ou porta indicada pelo `npm run dev`) abre a interface do ChronosBot
+- [ ] Consegue criar um usuário via `/auth/register` e logar via `/auth/login`
+- [ ] `psql -U chronosbot_user -d chronosbot -c "\dx"` lista `vector` entre as extensões instaladas
+
+---
+
+### ⚠️ Problemas comuns
+
+| Erro | Causa provável | Solução |
+| ---- | --------------- | ------- |
+| `extension "vector" is not available` | pgvector não instalado/compilado para a versão do Postgres | Repita o passo 3.2 conferindo a versão exata do Postgres (`psql --version`) |
+| `password authentication failed for user` | Usuário/senha do `.env` não bate com o criado no passo 3.1 | Confira `DATABASE_URL` e a senha criada no `CREATE USER` |
+| `ModuleNotFoundError` ao rodar `uvicorn` | Ambiente virtual não ativado ou dependência faltando | Ative o `.venv` e rode `pip install -r requirements.txt` novamente |
+| `429 Too Many Requests` do Gemini | Cota do free tier estourada | Adicione mais chaves em `GEMINI_API_KEYS` (separadas por vírgula) para ativar a rotação |
+| Frontend não conecta no backend (erro de CORS) | URL da API errada ou CORS não configurado | Confira `VITE_API_URL` no `.env.local` e as origens permitidas no CORS do FastAPI |
+| `npm install` falha com erros de permissão | Node instalado via método que exige `sudo` | Reinstale o Node via `nvm` (ver passo 1) para evitar precisar de `sudo` |
+
+
+<p align="right">(<a href="#topo">voltar ao topo</a>)</p>
 
 ---
 
@@ -487,32 +661,32 @@ JWT_EXPIRE_MINUTES=1440
 
 ```text
 ChronosBot/
-├── assets/
-│   └── logo.png                  ← Logotipo do projeto
 ├── backend/
 │   ├── main.py                   ← Entrypoint FastAPI
 │   ├── auth/                     ← JWT + RBAC
 │   ├── routes/                   ← chat.py, turmas.py, simulado.py
 │   ├── rag/
-│   │   ├── retriever.py          ← Busca vetorial com filtros (turma + disciplina + data)
-│   │   ├── indexer.py            ← Indexação de PDFs no ChromaDB
+│   │   ├── retriever.py          ← Busca vetorial (pgvector) com filtros
+│   │   ├── indexer.py            ← Indexação de PDFs (pypdf) na base
+│   │   ├── key_rotation.py       ← Rotação de chaves Gemini
 │   │   └── simulado.py           ← Geração de quiz via Gemini
-│   ├── models/                   ← SQLAlchemy ORM
+│   ├── models/                   ← SQLAlchemy ORM + schemas Pydantic v2
 │   └── database.py               ← Conexão PostgreSQL
 ├── frontend/
-│   ├── index.html
-│   ├── chat.html
-│   ├── simulado.html
-│   ├── professor/
-│   └── js/
-│       ├── api.js                ← Fetch wrapper com JWT
-│       └── chat.js
+│   ├── src/
+│   │   ├── assets/                ← logo.png e demais imagens
+│   │   ├── components/            ← componentes React
+│   │   └── pages/                 ← telas React (chat, simulado, professor)
+│   └── legacy/                    ← páginas HTML/JS em processo de migração
 ├── scripts/
 │   └── init_db.py
 ├── requirements.txt
 ├── .env.example
 └── README.md
 ```
+
+
+<p align="right">(<a href="#topo">voltar ao topo</a>)</p>
 
 ---
 
@@ -523,6 +697,10 @@ ChronosBot/
 - **Escopo Disciplinar:** O motor RAG filtra ativamente perguntas fora de História e Geografia
 - **LGPD:** Logs anonimizados, sem armazenamento de conteúdo pessoal em texto livre
 - **Filtro RAG:** A IA **nunca** acessa conteúdo de outra turma ou anterior à data de liberação
+- **Chaves de API:** gerenciadas via pool com rotação automática; nunca versionadas no repositório
+
+
+<p align="right">(<a href="#topo">voltar ao topo</a>)</p>
 
 ---
 
@@ -535,6 +713,9 @@ ChronosBot/
 | Usabilidade | Taxa de abandono de sessão | < 15% |
 | Funcionalidade | Cobertura de queries respondidas com contexto | ≥ 80% |
 | Segurança | Tentativas de acesso não autorizado bloqueadas | 100% |
+
+
+<p align="right">(<a href="#topo">voltar ao topo</a>)</p>
 
 ---
 
