@@ -15,7 +15,6 @@ from pathlib import Path
 
 from pypdf import PdfReader
 
-from backend.app.core.config import settings
 from backend.app.core.database import SessionLocal
 from backend.app.models.material import Material, StatusProcessamento
 from backend.app.services.gemini_client import gemini_client
