@@ -98,7 +98,7 @@ def enviar_material(
     db.refresh(material)
 
     # Processamento em background — ver nota de arquitetura em material_service.py
-    background_tasks.add_task(processar_material, material.id, db)
+    background_tasks.add_task(processar_material, material.id)
 
     return material
 

@@ -14,9 +14,9 @@ import logging
 from pathlib import Path
 
 from pypdf import PdfReader
-from sqlalchemy.orm import Session
 
 from backend.app.core.config import settings
+from backend.app.core.database import SessionLocal
 from backend.app.models.material import Material, StatusProcessamento
 from backend.app.services.gemini_client import gemini_client
 from backend.app.services.rag_service import _collection
@@ -42,53 +42,57 @@ def dividir_em_chunks(texto: str, tamanho: int = TAMANHO_CHUNK, sobreposicao: in
     return [c.strip() for c in chunks if c.strip()]
 
 
-def processar_material(material_id: int, db: Session) -> None:
+def processar_material(material_id: int) -> None:
     """
     Função executada em background (BackgroundTasks) após o upload.
-    Extrai texto, divide em chunks, gera embeddings e indexa no ChromaDB
-    com metadado material_id — essencial para o filtro `where` do rag_service.
+    Usa uma sessão própria para o trabalho assíncrono e evita reutilizar a
+    sessão HTTP da requisição que já foi fechada.
     """
-    material = db.query(Material).filter(Material.id == material_id).first()
-    if material is None:
-        logger.error("Material %s não encontrado para processamento.", material_id)
-        return
-
-    material.status_processamento = StatusProcessamento.PROCESSANDO
-    db.commit()
-
+    db = SessionLocal()
     try:
-        extensao = Path(material.caminho_arquivo).suffix.lower()
-        if extensao == ".pdf":
-            texto = extrair_texto_pdf(material.caminho_arquivo)
-        else:
-            texto = Path(material.caminho_arquivo).read_text(encoding="utf-8", errors="ignore")
+        material = db.query(Material).filter(Material.id == material_id).first()
+        if material is None:
+            logger.error("Material %s não encontrado para processamento.", material_id)
+            return
 
-        if not texto.strip():
-            raise ValueError("Não foi possível extrair texto do arquivo (arquivo vazio ou ilegível).")
-
-        chunks = dividir_em_chunks(texto)
-
-        ids, embeddings, documentos, metadados = [], [], [], []
-        for i, chunk in enumerate(chunks):
-            embedding = gemini_client.gerar_embedding(chunk)
-            ids.append(f"material-{material.id}-chunk-{i}")
-            embeddings.append(embedding)
-            documentos.append(chunk)
-            metadados.append({"material_id": material.id, "disciplina": material.disciplina})
-
-        if ids:
-            _collection.add(ids=ids, embeddings=embeddings, documents=documentos, metadatas=metadados)
-
-        material.status_processamento = StatusProcessamento.CONCLUIDO
-        material.mensagem_erro = None
+        material.status_processamento = StatusProcessamento.PROCESSANDO
         db.commit()
-        logger.info("Material %s processado com sucesso (%d chunks).", material_id, len(chunks))
 
-    except Exception as e:
-        logger.exception("Erro ao processar material %s", material_id)
-        material.status_processamento = StatusProcessamento.ERRO
-        material.mensagem_erro = str(e)
-        db.commit()
+        try:
+            extensao = Path(material.caminho_arquivo).suffix.lower()
+            if extensao == ".pdf":
+                texto = extrair_texto_pdf(material.caminho_arquivo)
+            else:
+                texto = Path(material.caminho_arquivo).read_text(encoding="utf-8", errors="ignore")
+
+            if not texto.strip():
+                raise ValueError("Não foi possível extrair texto do arquivo (arquivo vazio ou ilegível).")
+
+            chunks = dividir_em_chunks(texto)
+
+            ids, embeddings, documentos, metadados = [], [], [], []
+            for i, chunk in enumerate(chunks):
+                embedding = gemini_client.gerar_embedding(chunk)
+                ids.append(f"material-{material.id}-chunk-{i}")
+                embeddings.append(embedding)
+                documentos.append(chunk)
+                metadados.append({"material_id": material.id, "disciplina": material.disciplina})
+
+            if ids:
+                _collection.add(ids=ids, embeddings=embeddings, documents=documentos, metadatas=metadados)
+
+            material.status_processamento = StatusProcessamento.CONCLUIDO
+            material.mensagem_erro = None
+            db.commit()
+            logger.info("Material %s processado com sucesso (%d chunks).", material_id, len(chunks))
+
+        except Exception as e:
+            logger.exception("Erro ao processar material %s", material_id)
+            material.status_processamento = StatusProcessamento.ERRO
+            material.mensagem_erro = str(e)
+            db.commit()
+    finally:
+        db.close()
 
 
 """

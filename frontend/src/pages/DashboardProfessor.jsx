@@ -55,12 +55,14 @@ export default function DashboardProfessor() {
     form.append("disciplina", novoMaterial.disciplina);
     form.append("arquivo", novoMaterial.arquivo);
 
-    await api.post("/professor/materiais", form, {
-      headers: { "Content-Type": "multipart/form-data" },
-    });
-    setNovoMaterial({ titulo: "", disciplina: "Historia", arquivo: null });
-    setMensagem("Material enviado. O processamento roda em segundo plano.");
-    await carregarTudo();
+    try {
+      await api.post("/professor/materiais", form);
+      setNovoMaterial({ titulo: "", disciplina: "Historia", arquivo: null });
+      setMensagem("Material enviado. O processamento roda em segundo plano.");
+      await carregarTudo();
+    } catch (err) {
+      setMensagem(err.response?.data?.detail || "Erro ao enviar material.");
+    }
   }
 
   async function liberarMaterial(e) {
