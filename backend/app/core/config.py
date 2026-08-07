@@ -23,8 +23,9 @@ class Settings(BaseSettings):
 
     # --- Google Gemini ---
     GEMINI_API_KEY: str = os.getenv("GEMINI_API_KEY", "")
-    GEMINI_MODEL: str = "gemini-1.5-flash"
-    GEMINI_EMBEDDING_MODEL: str = "models/text-embedding-004"
+    GEMINI_MODEL: str = "gemini-2.5-flash"
+    GEMINI_EMBEDDING_MODEL: str = "gemini-embedding-001"
+    GEMINI_EMBEDDING_DIMENSIONS: int = 768  # mantém compatibilidade com chunks já indexados
 
     # Rotação de chaves (free tier) - lista separada por vírgula em GEMINI_API_KEYS
     GEMINI_API_KEYS: str = os.getenv("GEMINI_API_KEYS", "")

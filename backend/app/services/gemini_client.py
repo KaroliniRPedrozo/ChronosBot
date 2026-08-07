@@ -40,7 +40,7 @@ class GeminiClientRotativo:
         temperatura: float = 0.4,
     ) -> str:
         """
-        Gera texto com o modelo configurado (gemini-1.5-flash), tentando
+        Gera texto com o modelo configurado (gemini-2.5-flash), tentando
         cada chave disponível em caso de erro de quota (HTTP 429).
         """
         ultimo_erro = None
@@ -67,7 +67,7 @@ class GeminiClientRotativo:
         raise RuntimeError(f"Todas as chaves Gemini falharam. Último erro: {ultimo_erro}")
 
     def gerar_embedding(self, texto: str) -> list[float]:
-        """Gera embedding de um texto usando models/text-embedding-004."""
+        """Gera embedding de um texto usando gemini-embedding-001 com dimensionalidade fixa."""
         ultimo_erro = None
         for _ in range(len(self._chaves)):
             cliente = self._proximo_cliente()
@@ -75,6 +75,9 @@ class GeminiClientRotativo:
                 resposta = cliente.models.embed_content(
                     model=settings.GEMINI_EMBEDDING_MODEL,
                     contents=texto,
+                    config=types.EmbedContentConfig(
+                        output_dimensionality=settings.GEMINI_EMBEDDING_DIMENSIONS
+                    ),
                 )
                 return resposta.embeddings[0].values
             except ClientError as e:
