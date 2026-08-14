@@ -78,6 +78,12 @@ def enviar_material(
     professor: Usuario = Depends(exigir_professor),
     db: Session = Depends(get_db),
 ):
+    if Path(arquivo.filename or "").suffix.lower() != ".pdf":
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail="Apenas arquivos PDF são aceitos.",
+        )
+
     upload_dir = Path(settings.UPLOAD_DIR)
     upload_dir.mkdir(parents=True, exist_ok=True)
 

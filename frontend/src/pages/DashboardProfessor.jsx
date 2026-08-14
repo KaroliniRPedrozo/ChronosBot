@@ -211,7 +211,7 @@ export default function DashboardProfessor() {
               <input
                 required
                 type="file"
-                accept=".pdf,.txt"
+                accept=".pdf"
                 onChange={(e) => setNovoMaterial((d) => ({ ...d, arquivo: e.target.files[0] }))}
                 style={estiloInput}
               />
@@ -228,9 +228,16 @@ export default function DashboardProfessor() {
                       {m.disciplina === "Historia" ? "História" : "Geografia"}
                     </span>
                   </div>
-                  <span style={{ fontSize: 12.5, color: m.status_processamento === "erro" ? "var(--perigo)" : "var(--ink-muted)" }}>
-                    {RÓTULOS_STATUS[m.status_processamento]}
-                  </span>
+                  <div style={{ textAlign: "right" }}>
+                    <span style={{ fontSize: 12.5, color: m.status_processamento === "erro" ? "var(--perigo)" : "var(--ink-muted)" }}>
+                      {RÓTULOS_STATUS[m.status_processamento]}
+                    </span>
+                    {m.status_processamento === "erro" && m.mensagem_erro && (
+                      <div style={{ fontSize: 11.5, color: "var(--perigo)", marginTop: 2, maxWidth: 320 }}>
+                        {m.mensagem_erro}
+                      </div>
+                    )}
+                  </div>
                 </div>
               ))}
               {materiais.length === 0 && <p style={{ color: "var(--ink-muted)", fontSize: 13.5 }}>Nenhum material enviado ainda.</p>}

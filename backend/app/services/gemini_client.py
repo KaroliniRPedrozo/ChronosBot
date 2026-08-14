@@ -7,6 +7,7 @@ próxima chamada tenta a chave seguinte da lista.
 """
 import itertools
 import logging
+import threading
 from typing import Optional
 
 from google import genai
@@ -26,11 +27,18 @@ class GeminiClientRotativo:
                 "Nenhuma GEMINI_API_KEY configurada. Defina GEMINI_API_KEY ou GEMINI_API_KEYS no .env."
             )
         self._chaves = chaves
+        # Um genai.Client por chave, criado uma única vez: cada Client mantém seu
+        # próprio pool de conexões HTTP, então reaproveitá-lo evita refazer o
+        # handshake TLS a cada chamada (era o maior custo de latência do loop
+        # de embeddings em material_service.py).
+        self._clientes = [genai.Client(api_key=chave) for chave in chaves]
         self._ciclo = itertools.cycle(range(len(chaves)))
+        self._lock = threading.Lock()
 
     def _proximo_cliente(self) -> genai.Client:
-        idx = next(self._ciclo)
-        return genai.Client(api_key=self._chaves[idx])
+        with self._lock:
+            idx = next(self._ciclo)
+        return self._clientes[idx]
 
     def gerar_texto(
         self,

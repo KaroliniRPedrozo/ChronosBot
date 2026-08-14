@@ -11,9 +11,11 @@ NOTA DE ARQUITETURA (questão em aberto no projeto):
   (Celery + Redis, ou RQ) — ver docstring no final do arquivo.
 """
 import logging
+from concurrent.futures import ThreadPoolExecutor
 from pathlib import Path
 
 from pypdf import PdfReader
+from pypdf.errors import PdfReadError
 
 from backend.app.core.database import SessionLocal
 from backend.app.models.material import Material, StatusProcessamento
@@ -25,9 +27,26 @@ logger = logging.getLogger(__name__)
 TAMANHO_CHUNK = 1000  # caracteres
 SOBREPOSICAO_CHUNK = 150
 
+# Nº de chamadas de embedding em paralelo. Cada chamada é I/O-bound (rede), então
+# threads ajudam mesmo com o GIL. Limitado ao nº de chaves Gemini disponíveis
+# para não estourar a quota de uma única chave com concorrência excessiva.
+MAX_WORKERS_EMBEDDING = max(4, len(gemini_client._chaves) * 4)
+
 
 def extrair_texto_pdf(caminho_arquivo: str) -> str:
-    leitor = PdfReader(caminho_arquivo)
+    """
+    Extrai o texto de um PDF. Só material com texto de fato extraível é aceito
+    aqui — PDFs criptografados ou corrompidos viram um erro claro para o
+    professor, em vez de deixar o pypdf estourar uma exceção genérica.
+    """
+    try:
+        leitor = PdfReader(caminho_arquivo)
+    except PdfReadError as e:
+        raise ValueError(f"Arquivo PDF corrompido ou inválido: {e}") from e
+
+    if leitor.is_encrypted:
+        raise ValueError("O PDF está protegido por senha e não pode ser lido.")
+
     return "\n".join(pagina.extract_text() or "" for pagina in leitor.pages)
 
 
@@ -59,26 +78,33 @@ def processar_material(material_id: int) -> None:
 
         try:
             extensao = Path(material.caminho_arquivo).suffix.lower()
-            if extensao == ".pdf":
-                texto = extrair_texto_pdf(material.caminho_arquivo)
-            else:
-                texto = Path(material.caminho_arquivo).read_text(encoding="utf-8", errors="ignore")
+            if extensao != ".pdf":
+                # Escopo do TCC: apenas PDF. A rota de upload já rejeita outras
+                # extensões antes de chegar aqui; este é só um cinto de segurança.
+                raise ValueError(f"Tipo de arquivo não suportado: {extensao or 'desconhecido'}. Envie um PDF.")
+
+            texto = extrair_texto_pdf(material.caminho_arquivo)
 
             if not texto.strip():
-                raise ValueError("Não foi possível extrair texto do arquivo (arquivo vazio ou ilegível).")
+                raise ValueError(
+                    "Não foi possível extrair texto do PDF — provavelmente é um documento "
+                    "escaneado (imagem) sem camada de texto reconhecível."
+                )
 
             chunks = dividir_em_chunks(texto)
 
-            ids, embeddings, documentos, metadados = [], [], [], []
-            for i, chunk in enumerate(chunks):
-                embedding = gemini_client.gerar_embedding(chunk)
-                ids.append(f"material-{material.id}-chunk-{i}")
-                embeddings.append(embedding)
-                documentos.append(chunk)
-                metadados.append({"material_id": material.id, "disciplina": material.disciplina})
+            # As chamadas de embedding são feitas em paralelo (I/O de rede) em vez de
+            # sequencialmente: era o principal gargalo de performance do pipeline —
+            # um documento com muitos chunks pagava uma latência de rede inteira, uma
+            # de cada vez, quando poderiam ser concorrentes.
+            with ThreadPoolExecutor(max_workers=MAX_WORKERS_EMBEDDING) as executor:
+                embeddings = list(executor.map(gemini_client.gerar_embedding, chunks))
+
+            ids = [f"material-{material.id}-chunk-{i}" for i in range(len(chunks))]
+            metadados = [{"material_id": material.id, "disciplina": material.disciplina} for _ in chunks]
 
             if ids:
-                _collection.add(ids=ids, embeddings=embeddings, documents=documentos, metadatas=metadados)
+                _collection.add(ids=ids, embeddings=embeddings, documents=chunks, metadatas=metadados)
 
             material.status_processamento = StatusProcessamento.CONCLUIDO
             material.mensagem_erro = None
